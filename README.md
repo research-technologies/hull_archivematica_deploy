@@ -21,7 +21,7 @@ This is a terraform build to deploy the Hull Stack to an Azure Kubernetes Servic
 
 * create `terraform.tfvars` (see `terraform.tfvars.template`) OR (see convention below ../../terraform_builds/myapp/terraform.tfvars)
 * create file `config.json` with {} as the contents - this will be overwritten with docker auth, but must not be committed to github
-* Env file at `../.env` (see `../.env.template`)
+* Env file at `../.env` (see `../.env.template.combined`)
 * Solr config files at ../solr/config 
 
 ### Docker images
