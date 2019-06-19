@@ -1,0 +1,16 @@
+# Env
+.rbenv-vars
+.env
+
+# terraform
+*/.terraform/*
+*.tfvars
+*.tfstate
+*.tfstate*
+*.tfplan
+terraform/config.json
+terraform/create_copy_script.rb
+
+# Keys
+*id_rsa
+id_rsa

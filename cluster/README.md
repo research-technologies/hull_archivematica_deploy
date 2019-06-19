@@ -49,42 +49,7 @@ terraform plan
 terraform apply
 ```
 
-## Archivematica
 
-Once the Kubernetes Cluster is built, cd into the archivematica directory and provide the following terraform.tvars
-
-# Hull Archivematica Deploy 
-
-Run this after building the azure kubernetes cluster, supplying the following in terraform.tfvars
-
-shared_resource_group_name
-
-The /data mount on Hull Synchronizer needs to be shared by Archivematica:
-fileshare_account_name
-fileshare_account_key
-fileshare_name
-
-# Terraform Deploy
-
-```
-terraform init (first time only)
-terraform plan
-terraform apply
-```
-
-# Install Archivematica
-
-Scripts been copied to the azureuser home directory.
-
-chmod +x archivematica_install.sh
-./archivematica_install.sh
-
-This script requires some interactive input. When you are prompted to create a password for the archivematica-mcp-server, you must use demo as the password during the install process. The password can be changed after the installation is complete.
-
-When prompted about the mail server, select Mail server - No configuration (for now at least)
-
-chmod +x archivematica_mount.sh
-./archivematica_mount.sh
 
 
 ## Automatic Stop|Start of VMs

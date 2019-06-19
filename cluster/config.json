@@ -1,0 +1,10 @@
+{
+	"auths": {
+		"hulluathullculture.azurecr.io": {
+			"auth": "aHVsbHVhdGh1bGxjdWx0dXJlOk9zb0JNWTdHQUdCWWN6WDVLTUYrdG50MnRCMUEya1cx"
+		}
+	},
+	"HttpHeaders": {
+		"User-Agent": "Docker-Client/18.06.1-ce (linux)"
+	}
+}

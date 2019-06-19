@@ -1,0 +1,26 @@
+# AZURE Required
+subscription_id=""
+client_id=""
+client_secret=""
+tenant_id=""
+ssh_key = ""
+
+# Required
+owner="" # email address
+name="" 
+server_user="azureuser"
+
+# AZURE Optional (defaults in place)
+resource_group_name="terraform"
+# location=""
+# account_tier=""
+# dev/test 8vCPU 16GB RAM
+vm_size="Standard_A8_v2"
+
+# ALL Optional (defaults in place)
+# namespace-org=""
+# environment="" # uat, prod or demo; dev is default
+# org=""
+# service=""
+# product=""
+# team=""  
