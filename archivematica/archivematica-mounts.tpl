@@ -44,4 +44,4 @@ sudo chmod 600 /etc/smbcredentials/${fileshare_account_name}.cred
 
 sudo bash -c 'echo "//${fileshare_account_name}.file.core.windows.net/${fileshare_name} /data cifs nofail,vers=3.0,credentials=/etc/smbcredentials/${fileshare_account_name}.cred,dir_mode=0777,file_mode=0777,serverino" >> /etc/fstab'
 
-sudo mount /data
+sudo mount -a /data

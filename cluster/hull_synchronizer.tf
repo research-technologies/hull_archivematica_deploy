@@ -15,7 +15,7 @@ module "kubernetes_hullsynchronizer" {
   primary_mount_path = "/data"
   secondary_mount_path = "/app/shared"
   secondary_sub_path = "shared"
-  pvc_claim_name = "${module.kubernetes_pvc_hyrax.pvc_claim_name}"
+  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
   # replicas = 1
   port = 80
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
