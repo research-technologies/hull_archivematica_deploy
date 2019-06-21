@@ -195,7 +195,7 @@ resource "azurerm_virtual_machine" "vm" {
       type     = "ssh"
       host     = "${azurerm_public_ip.publicip.ip_address}"
       user     = "${var.server_user}"
-      private_key = "${file("/home/ec2-user/.ssh/id_rsa")}"
+      private_key = "${file("/home/azureuser/.ssh/id_rsa")}"
       agent    = false
       timeout  = "10m"
     }

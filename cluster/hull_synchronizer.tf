@@ -78,6 +78,32 @@ module "terraform_azure_public_ip_hullsync" {
   team = "${var.team}"
 }
 
+module "kubernetes_hullsync_sidekiq" {
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+
+  host = "${module.azure_kubernetes.host}"
+  username = "${module.azure_kubernetes.username}"
+  password = "${module.azure_kubernetes.password}"
+  client_certificate = "${module.azure_kubernetes.client_certificate}"
+  client_key = "${module.azure_kubernetes.client_key}"
+  cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
+
+  docker_image = "${module.azure_kubernetes.azure_container_registry_name}.azurecr.io/hullsync/hull_synchronizer_web:latest"
+  app_name = "hullsyncsidekiq"
+  primary_mount_path = "/data"
+  secondary_mount_path = "/app/shared"
+  secondary_sub_path = "shared"
+  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
+  port = 3001
+  # replicas = 0
+  image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
+  env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
+  command = ["/bin/bash","-ce", "bundle exec sidekiq"]
+  # Creates a dependency on redis
+  resource_version = ["${module.kubernetes_redis.deployment_resource_version}","${module.kubernetes_redis.service_resource_version}"]
+  service_type = "ClusterIP"
+}
+
 module "kubernetes_pvc_hull_synchronizer" {
   source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_pvc.git?ref=master"
 
