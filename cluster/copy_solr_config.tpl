@@ -35,21 +35,23 @@ end
 def create_directory
   puts 'Creating solr_config directory'
   @client.create_directory('${share_name}', 'solr_config')
-  @client.create_directory('${share_name}', 'solr_config', 'hhc')
-  @client.create_directory('${share_name}', 'solr_config', 'hyrax')
+  @client.create_directory('${share_name}', 'solr_config/hhc')
+  @client.create_directory('${share_name}', 'solr_config/hyrax')
 rescue StandardError  
   @client.get_directory_metadata('${share_name}', 'solr_config')
 end
 
 def create_files
-  puts 'Creating files'
+  puts 'Creating files for hhc_solr'
   Dir.glob("../hhc_solr/conf/*").each do | f |
     if File.file?(f)
       content = ::File.open(f, 'rb') { |file| file.read }
+      puts 'create file on client:' << File.basename(f) << " " << f
       file = @client.create_file('${share_name}', 'solr_config/hhc', File.basename(f), content.size)
       @client.put_file_range('${share_name}', 'solr_config/hhc', file.name, 0, content.size - 1, content)
     end
   end
+  puts 'Creating files for hyrax_solr'
   Dir.glob("../hyrax_solr/config/*").each do | f |
     if File.file?(f)
       content = ::File.open(f, 'rb') { |file| file.read }
