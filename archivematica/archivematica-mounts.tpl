@@ -8,14 +8,27 @@ sudo apt-get update
 
 sudo apt-get install blobfuse
 
+ARCHIVEMATICA_UID=$(id -u archivematica)
+ARCHIVEMATICA_GID=$(id -g archivematica)
+
+##### using SSD as temporary path for blobfuse will result in 16GB cache allocated to /archive https://github.com/Azure/azure-storage-fuse/issues/161
 sudo mkdir /mnt/resource/blobfusetmp -p
 sudo chown archivematica:archivematica /mnt/resource/blobfusetmp
 
-touch ~/fuse_connection.cfg
+##### using rmadisk temporary path allows us to set this to 2T overkill?
+# sudo mount -t tmpfs -o size=2T tmpfs /mnt/ramdisk
+# sudo mkdir /mnt/ramdisk/blobfusetmp -p
+# sudo chown archivematica:archivematica /mnt/ramdisk/blobfusetmp
 
-echo "accountName ${blob_account_name}" | tee -a ~/fuse_connection.cfg >/dev/null
-echo "accountKey ${blob_account_key}" | tee -a ~/fuse_connection.cfg >/dev/null
-echo "containerName ${blob_container_name}" | tee -a ~/fuse_connection.cfg >/dev/null
+if [ ! -f "~/fuse_connection.cfg" ]; then
+        touch ~/fuse_connection.cfg
+
+	echo "accountName ${blob_account_name}" | tee -a ~/fuse_connection.cfg >/dev/null
+	echo "accountKey ${blob_account_key}" | tee -a ~/fuse_connection.cfg >/dev/null
+	echo "containerName ${blob_container_name}" | tee -a ~/fuse_connection.cfg >/dev/null
+
+fi
+
 
 sudo chmod 600 fuse_connection.cfg
 
@@ -42,6 +55,6 @@ fi
 
 sudo chmod 600 /etc/smbcredentials/${fileshare_account_name}.cred
 
-sudo bash -c 'echo "//${fileshare_account_name}.file.core.windows.net/${fileshare_name} /data cifs nofail,vers=3.0,credentials=/etc/smbcredentials/${fileshare_account_name}.cred,dir_mode=0777,file_mode=0777,serverino" >> /etc/fstab'
+sudo bash -c "echo '//${fileshare_account_name}.file.core.windows.net/${fileshare_name} /data cifs nofail,vers=3.0,credentials=/etc/smbcredentials/${fileshare_account_name}.cred,dir_mode=0777,file_mode=0777,serverino,uid=$ARCHIVEMATICA_UID,gid=$ARCHIVEMATICA_GID,forceuid,forcegid' >> /etc/fstab"
 
 sudo mount -a /data
