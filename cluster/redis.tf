@@ -1,6 +1,6 @@
 # Redis
 module "kubernetes_redis" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_simple.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -11,9 +11,12 @@ module "kubernetes_redis" {
 
   docker_image = "redis:5"
   app_name = "redis"
-  primary_mount_path = "/data"
-  secondary_mount_path = "/opt" # this isn't used or needed
-  secondary_sub_path = "unused"
+
+  mount_path = "/data"
+
+#  primary_mount_path = "/data"
+#  secondary_mount_path = "/opt" # this isn't used or needed
+#  secondary_sub_path = "unused"
   pvc_claim_name = "${module.kubernetes_pvc_redis.pvc_claim_name}"
   # load_balancer_source_ranges = "${var.developer_access}"
   service_type = "ClusterIP"
@@ -34,6 +37,6 @@ module "kubernetes_pvc_redis" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
   
   volume = "redis"
-
+  mount_size = "48G"
 }
 

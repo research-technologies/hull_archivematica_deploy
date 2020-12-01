@@ -1,6 +1,6 @@
 # postgresql
 module "kubernetes_postgres" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_simple.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -11,15 +11,17 @@ module "kubernetes_postgres" {
   
   docker_image = "postgres:11-alpine"
   app_name = "postgresdb"
-  
-  primary_mount_path = "/var/lib/postgresql/data" # DO NOT CHANGE; ENSURE PGDATA is set in .env
-  secondary_mount_path = "/data" # this isn't used or needed
-  secondary_sub_path = "unused"
+ 
+  mount_path = "/var/lib/postgresql/data" # DO NOT CHANGE; ENSURE PGDATA is set in .env
+ 
+#  primary_mount_path = "/var/lib/postgresql/data" # DO NOT CHANGE; ENSURE PGDATA is set in .env
+#  secondary_mount_path = "/data" # this isn't used or needed
+#  secondary_sub_path = "unused"
   pvc_claim_name = "${module.kubernetes_pvc_postgresdb.pvc_claim_name}"
   # load_balancer_source_ranges = "${var.developer_access}"
   service_type = "ClusterIP"
   
-  port = 5432
+  port = "5432"
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
 
@@ -37,6 +39,7 @@ module "kubernetes_pvc_postgresdb" {
   
   volume= "postgresdb"
   storage_class_name = "azuredisk"
+  mount_size = "128G"
 
 }
 

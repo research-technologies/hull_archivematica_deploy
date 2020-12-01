@@ -20,7 +20,7 @@ resource "local_file" "create_copy_script" {
 
 # solr
 module "kubernetes_solr" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_simple_two_mounts.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -30,15 +30,21 @@ module "kubernetes_solr" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
 
   docker_image = "solr:7-alpine"
+
   app_name = "solr"
   primary_mount_path = "/opt/solr/server/solr/mycores"
+  pvc_claim_name = "${module.kubernetes_pvc_solr.pvc_claim_name}"
+
+  # Another mount to same volume 
+  secondary_volume_name = "solr"
   secondary_mount_path = "/data"
   secondary_sub_path = "solr_config"
-  pvc_claim_name = "${module.kubernetes_pvc_solr.pvc_claim_name}"
+
   load_balancer_source_ranges = "${var.developer_access}"
   load_balancer_ip = "${module.terraform_azure_public_ip_solr.public_ip}"
   
   port = 8983
+
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
   
@@ -83,5 +89,6 @@ module "kubernetes_pvc_solr" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
   
   volume = "solr"
+  mount_size = "100G"
 
 }
