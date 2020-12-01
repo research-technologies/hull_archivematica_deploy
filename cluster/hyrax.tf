@@ -54,7 +54,7 @@ resource "local_file" "build" {
 }
 
 module "kubernetes_hyrax" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_two_ports_two_mounts.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -66,11 +66,15 @@ module "kubernetes_hyrax" {
   docker_image = "${module.azure_kubernetes.azure_container_registry_name}.azurecr.io/hyrax/hyrax_leaf_web:latest"
   app_name = "hyrax"
   primary_mount_path = "/data"
+  pvc_claim_name = "${module.kubernetes_pvc_hyrax.pvc_claim_name}"
+
   secondary_mount_path = "/app/shared"
   secondary_sub_path = "shared"
-  pvc_claim_name = "${module.kubernetes_pvc_hyrax.pvc_claim_name}"
+
   # replicas = 1
-  port = 80
+  primary_port = 80
+  secondary_port = 443
+
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
   command = ["/bin/bash","-ce", "/bin/docker-entrypoint-web.sh"]
@@ -134,7 +138,7 @@ module "terraform_azure_public_ip_hyrax" {
 # Sidekiq
 
 module "kubernetes_sidekiq" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_simple_two_mounts.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -146,10 +150,14 @@ module "kubernetes_sidekiq" {
   docker_image = "${module.azure_kubernetes.azure_container_registry_name}.azurecr.io/hyrax/hyrax_leaf_web:latest"
   app_name = "sidekiq"
   primary_mount_path = "/data"
+  pvc_claim_name = "${module.kubernetes_pvc_hyrax.pvc_claim_name}"
+
+  secondary_volume_name = "sidekiq"
   secondary_mount_path = "/app/shared"
   secondary_sub_path = "shared"
-  pvc_claim_name = "${module.kubernetes_pvc_hyrax.pvc_claim_name}"
-  port = 3001
+
+  port = "3001"
+
   # replicas = 0
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
@@ -170,5 +178,6 @@ module "kubernetes_pvc_hyrax" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
   
   volume = "hyraxsidekiq"
+  mount_size = "200G"
 
 }
