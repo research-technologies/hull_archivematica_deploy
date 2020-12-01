@@ -3,6 +3,7 @@
 provider "azurerm" { 
   subscription_id = "${var.subscription_id}"
   tenant_id = "${var.tenant_id}"
+  features {}
 }
 
 module "labels" {
@@ -108,7 +109,7 @@ resource "azurerm_network_interface" "nic" {
     name = "${module.labels.id}-nic"
     location = "${var.location}"
     resource_group_name = "${var.shared_resource_group_name}"
-    network_security_group_id = "${azurerm_network_security_group.security_groups.id}"
+#    network_security_group_id = "${azurerm_network_security_group.security_groups.id}"
     
 
     ip_configuration {
@@ -155,6 +156,7 @@ resource "azurerm_virtual_machine" "vm" {
         caching = "ReadWrite"
         create_option = "FromImage"
         managed_disk_type = "Premium_LRS"
+        disk_size_gb = "512"
     }
 
     # https://azuremarketplace.microsoft.com/en-us/marketplace/apps/RogueWave.CentOSbased75?tab=Overview
@@ -195,7 +197,8 @@ resource "azurerm_virtual_machine" "vm" {
       type     = "ssh"
       host     = "${azurerm_public_ip.publicip.ip_address}"
       user     = "${var.server_user}"
-      private_key = "${file("/home/azureuser/.ssh/id_rsa")}"
+#      private_key = "${file("/home/azureuser/.ssh/id_rsa")}"
+      private_key = "${file("/home/ec2-user/.ssh/azure_id_rsa")}"
       agent    = false
       timeout  = "10m"
     }
@@ -209,6 +212,17 @@ resource "azurerm_virtual_machine" "vm" {
       source = "archivematica-install.sh"
       destination = "/home/azureuser/archivematica-install.sh"
     }
+
+    provisioner "file" {
+      source = "archivematica-rebuild-aip-index.sh"
+      destination = "/home/azureuser/archivematica-rebuild-aip-index.sh"
+    }
+
+    provisioner "file" {
+      source = "archivematica-rebuild-transfer-index.sh"
+      destination = "/home/azureuser/archivematica-rebuild-transfer-index.sh"
+    }
+
   }
 
 resource "azurerm_storage_account" "archivematica" {
@@ -223,7 +237,7 @@ resource "azurerm_storage_account" "archivematica" {
 
 resource "azurerm_storage_container" "archivematica" {
   name = "${azurerm_storage_account.archivematica.name}"
-  resource_group_name = "${var.shared_resource_group_name}"
+#  resource_group_name = "${var.shared_resource_group_name}"
   storage_account_name  = "${azurerm_storage_account.archivematica.name}"
   container_access_type = "private"
 }
