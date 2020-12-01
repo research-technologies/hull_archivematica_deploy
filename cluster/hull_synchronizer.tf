@@ -1,7 +1,7 @@
 # Hull Synchronizer
 
 module "kubernetes_hullsynchronizer" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_two_ports_two_mounts.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -13,11 +13,15 @@ module "kubernetes_hullsynchronizer" {
   docker_image = "${module.azure_kubernetes.azure_container_registry_name}.azurecr.io/hullsync/hull_synchronizer_web:latest"
   app_name = "hullsynchronizer"
   primary_mount_path = "/data"
+  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
+
   secondary_mount_path = "/app/shared"
   secondary_sub_path = "shared"
-  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
+
   # replicas = 1
-  port = 80
+  primary_port = 80
+  secondary_port = 443
+
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
   command = ["/bin/bash","-ce", "/bin/docker-entrypoint.sh"]
@@ -79,7 +83,7 @@ module "terraform_azure_public_ip_hullsync" {
 }
 
 module "kubernetes_hullsync_sidekiq" {
-  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment.git?ref=master"
+  source = "git::https://github.com/anarchist-raccoons/terraform_kubernetes_deployment_simple_two_mounts.git?ref=master"
 
   host = "${module.azure_kubernetes.host}"
   username = "${module.azure_kubernetes.username}"
@@ -89,12 +93,17 @@ module "kubernetes_hullsync_sidekiq" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
 
   docker_image = "${module.azure_kubernetes.azure_container_registry_name}.azurecr.io/hullsync/hull_synchronizer_web:latest"
+
   app_name = "hullsyncsidekiq"
   primary_mount_path = "/data"
+  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
+
+  secondary_volume_name = "hullsyncsidekiq"
   secondary_mount_path = "/app/shared"
   secondary_sub_path = "shared"
-  pvc_claim_name = "${module.kubernetes_pvc_hull_synchronizer.pvc_claim_name}"
-  port = 3001
+
+  port = "3001"
+
   # replicas = 0
   image_pull_secrets = "${module.kubernetes_secret_docker.kubernetes_secret_name}"
   env_from = "${module.kubernetes_secret_env.kubernetes_secret_name}"
@@ -115,5 +124,6 @@ module "kubernetes_pvc_hull_synchronizer" {
   cluster_ca_certificate = "${module.azure_kubernetes.cluster_ca_certificate}"
   
   volume = "hullsynchronizer"
+  mount_size = "300G"
 
 }
