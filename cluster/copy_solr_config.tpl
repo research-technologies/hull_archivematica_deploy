@@ -1,5 +1,6 @@
 require 'azure/storage/file'
 require 'json'
+require 'tempfile'
 
 # xxx
 
