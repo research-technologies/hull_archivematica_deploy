@@ -76,21 +76,26 @@ terraform apply
 
 Scripts been copied to the azureuser home directory.
 
+```
  chmod +x archivematica_install.sh
  ./archivematica-install.sh
+```
 
 This script requires some interactive input. When you are prompted to create a password for the archivematica-mcp-server, you must use demo as the password during the install process. The password can be changed after the installation is complete.
 
 When prompted about the mail server, select Mail server - No configuration (for now at least)
 
+```
  chmod +x archivematica_mount.sh
  ./archivematica-mount.sh
+```
 
 When configuring archivematica storage service edit the locations for AIP Storage, DIP Storage and transfer source so that they use the newly mounted volumes:
 
-AIP Storage => /archive
-DIP Storage => /data/dipstore
-Transfer Source => /data/transfer
+
+* AIP Storage => /archive
+* DIP Storage => /data/dipstore
+* Transfer Source => /data/transfer
 
 
 ## Automatic Stop|Start of VMs
