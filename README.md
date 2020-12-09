@@ -77,7 +77,7 @@ terraform apply
 Scripts been copied to the azureuser home directory.
 
 ```
- chmod +x archivematica_install.sh
+ chmod +x archivematica-install.sh
  ./archivematica-install.sh
 ```
 
@@ -86,7 +86,7 @@ This script requires some interactive input. When you are prompted to create a p
 When prompted about the mail server, select Mail server - No configuration (for now at least)
 
 ```
- chmod +x archivematica_mount.sh
+ chmod +x archivematica-mount.sh
  ./archivematica-mount.sh
 ```
 
